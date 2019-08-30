@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPTFactory", "PPTFactory\PPTFactory.csproj", "{269C28FD-6437-4DFE-ABC7-924675AC22DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPTAnalysisCore", "PPTAnalysisCore\PPTAnalysisCore.csproj", "{8171E37B-5CCA-4FD0-BCD3-AF3AB5DB8A3C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{269C28FD-6437-4DFE-ABC7-924675AC22DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{269C28FD-6437-4DFE-ABC7-924675AC22DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{269C28FD-6437-4DFE-ABC7-924675AC22DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{269C28FD-6437-4DFE-ABC7-924675AC22DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8171E37B-5CCA-4FD0-BCD3-AF3AB5DB8A3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8171E37B-5CCA-4FD0-BCD3-AF3AB5DB8A3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8171E37B-5CCA-4FD0-BCD3-AF3AB5DB8A3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8171E37B-5CCA-4FD0-BCD3-AF3AB5DB8A3C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
