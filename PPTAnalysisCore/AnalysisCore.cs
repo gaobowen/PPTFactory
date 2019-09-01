@@ -6,6 +6,7 @@ using P = DocumentFormat.OpenXml.Presentation;
 using D = DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Presentation;
 using System.IO;
+using System.Linq;
 
 namespace PPTAnalysisCore
 {
@@ -215,25 +216,9 @@ namespace PPTAnalysisCore
             {
                 return null;
             }
-            // var type = Path.GetExtension(filePath).Replace(".", "");
-            // if (type == "svg")
-            // {
-            //     type += "+xml";
-            // }
 
             var imgprt = sldpart.AddImagePart(AnalysisHelper.GetImagePartType(filePath));
-
             string rlid = sldpart.GetIdOfPart(imgprt);
-            //DocumentFormat.OpenXml.Packaging.CustomPropertyPartType
-            // imgprt.AddExtendedPart
-            // (
-            //     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image",
-            //     $"image/{type}",
-            //     $".{type}"
-            // );
-            imgprt.FeedData(new FileStream(filePath, FileMode.Open));
-
-            
             var tree = sldpart.Slide.CommonSlideData.ShapeTree;
             uint maxid = AnalysisHelper.GetMaxId(tree);
             Picture pic = new Picture();
@@ -250,25 +235,37 @@ namespace PPTAnalysisCore
                     {
                         NoChangeAspect = true
                     }
-                }
-            );
-            pic.BlipFill = new BlipFill
-            (
-                new D.Blip
-                (
-                    // new D.BlipExtensionList
-                    // (
-                    //     new D.BlipExtension()
-                    //     {
-                    //         Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}" //dpi
-                    //     }
-                    // )
-                )
-                {
-                    Embed = rlid,
                 },
-                new D.Stretch(new D.FillRectangle())
+                //必须指定元素的类型，否则会报错。
+                new ApplicationNonVisualDrawingProperties
+                (
+                    new PlaceholderShape()
+                    {
+                        Type = PlaceholderValues.Picture
+                    }
+                )
             );
+
+            P.BlipFill blipFill = new P.BlipFill();
+            D.Blip blip = new D.Blip() { Embed = rlid };
+            D.BlipExtensionList blipExtensionList = new D.BlipExtensionList();
+            D.BlipExtension blipExtension = new D.BlipExtension() { Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}" };
+            DocumentFormat.OpenXml.Office2010.Drawing.UseLocalDpi useLocalDpi = 
+                new DocumentFormat.OpenXml.Office2010.Drawing.UseLocalDpi() { Val = false };
+            useLocalDpi.AddNamespaceDeclaration("a14",
+                "http://schemas.microsoft.com/office/drawing/2010/main");
+
+            blipExtension.Append(useLocalDpi);
+            blipExtensionList.Append(blipExtension);
+            blip.Append(blipExtensionList);
+
+            D.Stretch stretch = new D.Stretch();
+            D.FillRectangle fillRectangle = new D.FillRectangle();
+            stretch.Append(fillRectangle);
+
+            blipFill.Append(blip);
+            blipFill.Append(stretch);
+            pic.Append(blipFill);
             pic.ShapeProperties = new P.ShapeProperties
             (
                 new D.PresetGeometry(new D.AdjustValueList())
@@ -280,9 +277,14 @@ namespace PPTAnalysisCore
                 Transform2D = transform
             };
             tree.AppendChild(pic);
+
+            using(FileStream fileStream = new FileStream(filePath, FileMode.Open))
+            {
+                imgprt.FeedData(fileStream);
+            }
+            
             return pic;
         }
-
 
         private void InitProperty()
         {

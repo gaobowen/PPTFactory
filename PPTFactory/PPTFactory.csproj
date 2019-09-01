@@ -264,5 +264,19 @@
     <None Remove="yanshi111\ppt\media\image3.svg" />
     <None Remove="yanshi111\ppt\media\image1.png" />
     <None Remove="yanshi111\ppt\media\image2.png" />
+    <None Remove="Image\test.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Image\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Image\test.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Image\test.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
