@@ -1,11 +1,11 @@
 ﻿using System;
 using DocumentFormat.OpenXml.Packaging;
-using Drawing = DocumentFormat.OpenXml.Drawing;
 using Shape = DocumentFormat.OpenXml.Presentation.Shape;
 using P = DocumentFormat.OpenXml.Presentation;
 using D = DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml;
+using System.Drawing;
 
 namespace PPTAnalysisCore
 {
@@ -28,19 +28,6 @@ namespace PPTAnalysisCore
             }
         }
 
-        public static ShapeTree GetShapeTree(this PresentationDocument doc, int index)
-        {
-            var ids = doc.PresentationPart.Presentation.SlideIdList;
-            var slprt = (SlidePart)doc.PresentationPart.GetPartById((ids.ChildElements[index] as SlideId)?.RelationshipId);
-            return slprt?.Slide?.CommonSlideData?.ShapeTree;
-        }
-
-        public static SlidePart GetSlidePart(this PresentationDocument doc, int index)
-        {
-            var ids = doc.PresentationPart.Presentation.SlideIdList;
-            var slprt = (SlidePart)doc.PresentationPart.GetPartById((ids.ChildElements[index] as SlideId)?.RelationshipId);
-            return slprt;
-        }
 
         public static UInt32Value GetMaxId(ShapeTree tree)
         {
@@ -64,6 +51,7 @@ namespace PPTAnalysisCore
             }
             return maxid;
         }
+
 
         public static PresentationDocument CreateBlankPPT(string filepath)
         {
