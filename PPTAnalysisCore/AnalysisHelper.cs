@@ -6,6 +6,7 @@ using D = DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml;
 using System.Drawing;
+using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace PPTAnalysisCore
 {
@@ -52,6 +53,169 @@ namespace PPTAnalysisCore
             return maxid;
         }
 
+        public static void InitTiming(Slide slide)
+        {
+            Timing timing1 = new Timing();
+
+            TimeNodeList timeNodeList1 = new TimeNodeList();
+
+            ParallelTimeNode parallelTimeNode1 = new ParallelTimeNode();
+
+            CommonTimeNode commonTimeNode1 = new CommonTimeNode() { Id = (UInt32Value)1U, Duration = "indefinite", Restart = TimeNodeRestartValues.Never, NodeType = TimeNodeValues.TmingRoot };
+
+            ChildTimeNodeList childTimeNodeList1 = new ChildTimeNodeList();
+
+            SequenceTimeNode sequenceTimeNode1 = new SequenceTimeNode() { Concurrent = true, NextAction = NextActionValues.Seek };
+
+            CommonTimeNode commonTimeNode2 = new CommonTimeNode() { Id = (UInt32Value)2U, Restart = TimeNodeRestartValues.WhenNotActive, Fill = TimeNodeFillValues.Hold, EventFilter = "cancelBubble", NodeType = TimeNodeValues.InteractiveSequence };
+
+            StartConditionList startConditionList1 = new StartConditionList();
+
+            Condition condition1 = new Condition() { Event = TriggerEventValues.OnClick, Delay = "0" };
+
+            TargetElement targetElement1 = new TargetElement();
+            ShapeTarget shapeTarget1 = new ShapeTarget() { ShapeId = "3" };
+
+            targetElement1.Append(shapeTarget1);
+
+            condition1.Append(targetElement1);
+
+            startConditionList1.Append(condition1);
+
+            EndSync endSync1 = new EndSync() { Event = TriggerEventValues.End, Delay = "0" };
+            RuntimeNodeTrigger runtimeNodeTrigger1 = new RuntimeNodeTrigger() { Val = TriggerRuntimeNodeValues.All };
+
+            endSync1.Append(runtimeNodeTrigger1);
+
+            ChildTimeNodeList childTimeNodeList2 = new ChildTimeNodeList();
+
+            ParallelTimeNode parallelTimeNode2 = new ParallelTimeNode();
+
+            CommonTimeNode commonTimeNode3 = new CommonTimeNode() { Id = (UInt32Value)3U, Fill = TimeNodeFillValues.Hold };
+
+            StartConditionList startConditionList2 = new StartConditionList();
+            Condition condition2 = new Condition() { Delay = "0" };
+
+            startConditionList2.Append(condition2);
+
+            ChildTimeNodeList childTimeNodeList3 = new ChildTimeNodeList();
+
+            ParallelTimeNode parallelTimeNode3 = new ParallelTimeNode();
+
+            CommonTimeNode commonTimeNode4 = new CommonTimeNode() { Id = (UInt32Value)4U, Fill = TimeNodeFillValues.Hold };
+
+            StartConditionList startConditionList3 = new StartConditionList();
+            Condition condition3 = new Condition() { Delay = "0" };
+
+            startConditionList3.Append(condition3);
+
+            ChildTimeNodeList childTimeNodeList4 = new ChildTimeNodeList();
+
+            ParallelTimeNode parallelTimeNode4 = new ParallelTimeNode();
+
+            CommonTimeNode commonTimeNode5 = new CommonTimeNode() { Id = (UInt32Value)5U, PresetId = 2, PresetClass = TimeNodePresetClassValues.MediaCall, PresetSubtype = 0, Fill = TimeNodeFillValues.Hold, NodeType = TimeNodeValues.ClickEffect };
+
+            StartConditionList startConditionList4 = new StartConditionList();
+            Condition condition4 = new Condition() { Delay = "0" };
+
+            startConditionList4.Append(condition4);
+
+            ChildTimeNodeList childTimeNodeList5 = new ChildTimeNodeList();
+
+            Command command1 = new Command() { Type = CommandValues.Call, CommandName = "togglePause" };
+
+            CommonBehavior commonBehavior1 = new CommonBehavior();
+            CommonTimeNode commonTimeNode6 = new CommonTimeNode() { Id = (UInt32Value)6U, Duration = "1", Fill = TimeNodeFillValues.Hold };
+
+            TargetElement targetElement2 = new TargetElement();
+            ShapeTarget shapeTarget2 = new ShapeTarget() { ShapeId = "3" };
+
+            targetElement2.Append(shapeTarget2);
+
+            commonBehavior1.Append(commonTimeNode6);
+            commonBehavior1.Append(targetElement2);
+
+            command1.Append(commonBehavior1);
+
+            childTimeNodeList5.Append(command1);
+
+            commonTimeNode5.Append(startConditionList4);
+            commonTimeNode5.Append(childTimeNodeList5);
+
+            parallelTimeNode4.Append(commonTimeNode5);
+
+            childTimeNodeList4.Append(parallelTimeNode4);
+
+            commonTimeNode4.Append(startConditionList3);
+            commonTimeNode4.Append(childTimeNodeList4);
+
+            parallelTimeNode3.Append(commonTimeNode4);
+
+            childTimeNodeList3.Append(parallelTimeNode3);
+
+            commonTimeNode3.Append(startConditionList2);
+            commonTimeNode3.Append(childTimeNodeList3);
+
+            parallelTimeNode2.Append(commonTimeNode3);
+
+            childTimeNodeList2.Append(parallelTimeNode2);
+
+            commonTimeNode2.Append(startConditionList1);
+            commonTimeNode2.Append(endSync1);
+            commonTimeNode2.Append(childTimeNodeList2);
+
+            NextConditionList nextConditionList1 = new NextConditionList();
+
+            Condition condition5 = new Condition() { Event = TriggerEventValues.OnClick, Delay = "0" };
+
+            TargetElement targetElement3 = new TargetElement();
+            ShapeTarget shapeTarget3 = new ShapeTarget() { ShapeId = "3" };
+
+            targetElement3.Append(shapeTarget3);
+
+            condition5.Append(targetElement3);
+
+            nextConditionList1.Append(condition5);
+
+            sequenceTimeNode1.Append(commonTimeNode2);
+            sequenceTimeNode1.Append(nextConditionList1);
+
+            Video video1 = new Video();
+
+            CommonMediaNode commonMediaNode1 = new CommonMediaNode() { Volume = 80000 };
+
+            CommonTimeNode commonTimeNode7 = new CommonTimeNode() { Id = (UInt32Value)7U, Fill = TimeNodeFillValues.Hold, Display = false };
+
+            StartConditionList startConditionList5 = new StartConditionList();
+            Condition condition6 = new Condition() { Delay = "indefinite" };
+
+            startConditionList5.Append(condition6);
+
+            commonTimeNode7.Append(startConditionList5);
+
+            TargetElement targetElement4 = new TargetElement();
+            ShapeTarget shapeTarget4 = new ShapeTarget() { ShapeId = "3" };
+
+            targetElement4.Append(shapeTarget4);
+
+            commonMediaNode1.Append(commonTimeNode7);
+            commonMediaNode1.Append(targetElement4);
+
+            video1.Append(commonMediaNode1);
+
+            childTimeNodeList1.Append(sequenceTimeNode1);
+            childTimeNodeList1.Append(video1);
+
+            commonTimeNode1.Append(childTimeNodeList1);
+
+            parallelTimeNode1.Append(commonTimeNode1);
+
+            timeNodeList1.Append(parallelTimeNode1);
+
+            timing1.Append(timeNodeList1);
+
+            slide.Append(timing1);
+        }
 
         public static PresentationDocument CreateBlankPPT(string filepath)
         {

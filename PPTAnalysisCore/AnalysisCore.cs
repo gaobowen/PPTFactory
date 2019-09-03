@@ -7,6 +7,7 @@ using D = DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Presentation;
 using System.IO;
 using System.Linq;
+using P14 = DocumentFormat.OpenXml.Office2010.PowerPoint;
 
 namespace PPTAnalysisCore
 {
@@ -14,7 +15,6 @@ namespace PPTAnalysisCore
     {
         private static PresentationDocument _prototype16x9 = null;
         private static P.Slide _prototypeSlide = null;
-
         private int _width;
         private int _height;
 
@@ -22,17 +22,18 @@ namespace PPTAnalysisCore
         public int Width => _width;
         public int Height => _height;
 
-        public AnalysisCore()
+        private AnalysisCore()
         {
             if (_prototype16x9 == null)
             {
                 _prototype16x9 = PresentationDocument.Open(AppDomain.CurrentDomain.BaseDirectory + "/blankone.pptx", true);
             }
+
             Doc = (PresentationDocument)_prototype16x9.Clone();
             InitProperty();
         }
 
-        public AnalysisCore(PresentationDocument presentationDocument)
+        private AnalysisCore(PresentationDocument presentationDocument)
         {
             Doc = presentationDocument;
             InitProperty();
@@ -40,8 +41,19 @@ namespace PPTAnalysisCore
 
         public AnalysisCore(string filePath)
         {
-            Doc = PresentationDocument.Create(filePath, PresentationDocumentType.Presentation, true);
+            Doc = PresentationDocument.Open(filePath, true);
             InitProperty();
+        }
+
+        public static AnalysisCore New(string path)
+        {
+            File.Copy(AppDomain.CurrentDomain.BaseDirectory + "/blankone.pptx", path, true);
+            return new AnalysisCore(path);
+        }
+
+        public static AnalysisCore Open(string path)
+        {
+            return new AnalysisCore(path);
         }
 
         public int GetSlideCount()
@@ -62,7 +74,24 @@ namespace PPTAnalysisCore
             nonVisualProperties.NonVisualDrawingProperties = new NonVisualDrawingProperties() { Id = 1, Name = "" };
             nonVisualProperties.NonVisualGroupShapeDrawingProperties = new NonVisualGroupShapeDrawingProperties();
             nonVisualProperties.ApplicationNonVisualDrawingProperties = new ApplicationNonVisualDrawingProperties();
-            slide.CommonSlideData.ShapeTree.AppendChild(new GroupShapeProperties());
+            slide.CommonSlideData.ShapeTree.AppendChild(
+                new GroupShapeProperties()
+                {
+                    TransformGroup = new D.TransformGroup
+                    (
+                        new D.Offset() { X = 0L, Y = 0L },
+                        new D.Extents() { Cx = 0L, Cy = 0L },
+                        new D.ChildOffset() { X = 0L, Y = 0L },
+                        new D.ChildExtents() { Cx = 0L, Cy = 0L }
+                    )
+                });
+            CommonSlideDataExtensionList commonSlideDataExtensionList1 = new CommonSlideDataExtensionList();
+            CommonSlideDataExtension commonSlideDataExtension1 = new CommonSlideDataExtension() { Uri = "{BB962C8B-B14F-4D97-AF65-F5344CB8AC3E}" };
+            P14.CreationId creationId1 = new P14.CreationId() { Val = (UInt32Value)4033567156U };
+            creationId1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
+            commonSlideDataExtension1.Append(creationId1);
+            commonSlideDataExtensionList1.Append(commonSlideDataExtension1);
+            slide.CommonSlideData.Append(commonSlideDataExtensionList1);
             SlidePart slidePart = Doc.PresentationPart.AddNewPart<SlidePart>();
             var slideIdList = Doc.PresentationPart.Presentation.SlideIdList;
             slide.Save(slidePart);
@@ -250,7 +279,7 @@ namespace PPTAnalysisCore
             D.Blip blip = new D.Blip() { Embed = rlid };
             D.BlipExtensionList blipExtensionList = new D.BlipExtensionList();
             D.BlipExtension blipExtension = new D.BlipExtension() { Uri = "{28A0092B-C50C-407E-A947-70E740481C1C}" };
-            DocumentFormat.OpenXml.Office2010.Drawing.UseLocalDpi useLocalDpi = 
+            DocumentFormat.OpenXml.Office2010.Drawing.UseLocalDpi useLocalDpi =
                 new DocumentFormat.OpenXml.Office2010.Drawing.UseLocalDpi() { Val = false };
             useLocalDpi.AddNamespaceDeclaration("a14",
                 "http://schemas.microsoft.com/office/drawing/2010/main");
@@ -278,13 +307,108 @@ namespace PPTAnalysisCore
             };
             tree.AppendChild(pic);
 
-            using(FileStream fileStream = new FileStream(filePath, FileMode.Open))
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
             {
                 imgprt.FeedData(fileStream);
             }
-            
+
             return pic;
         }
+
+
+        public void AddVideo(SlidePart slidepart, string videoFilePath, string videoCoverPath, D.Transform2D transform)
+        {
+            Slide slide = slidepart.Slide;
+            ShapeTree shapeTree1 = slidepart.Slide.CommonSlideData.ShapeTree;
+            var ptrlid = Doc.PresentationPart.GetIdOfPart(slidepart);
+            var picID = AnalysisHelper.GetMaxId(shapeTree1);
+            string imgEmbedId = string.Format("imgId{0}{1}{2}", ptrlid, picID, 1);
+            string videoEmbedId = string.Format("vidId{0}{1}{2}", ptrlid, picID, 2);
+            string mediaEmbedId = string.Format("medId{0}{1}{2}", ptrlid, picID, 3);
+
+            Picture picture1 = new Picture();
+            NonVisualPictureProperties nonVisualPictureProperties1 = new NonVisualPictureProperties();
+
+            NonVisualDrawingProperties nonVisualDrawingProperties2 =
+                new NonVisualDrawingProperties() { Id = (UInt32Value)3U, Name = videoEmbedId + "" };
+            D.HyperlinkOnClick hyperlinkOnClick1 = new D.HyperlinkOnClick() { Id = "", Action = "ppaction://media" };
+            nonVisualDrawingProperties2.Append(hyperlinkOnClick1);
+
+            NonVisualPictureDrawingProperties nonVisualPictureDrawingProperties1 = new NonVisualPictureDrawingProperties();
+            D.PictureLocks pictureLocks1 = new D.PictureLocks() { NoChangeAspect = true };
+            nonVisualPictureDrawingProperties1.Append(pictureLocks1);
+
+            ApplicationNonVisualDrawingProperties applicationNonVisualDrawingProperties2 = new ApplicationNonVisualDrawingProperties();
+            D.VideoFromFile videoFromFile1 = new D.VideoFromFile() { Link = videoEmbedId };
+
+            ApplicationNonVisualDrawingPropertiesExtensionList applicationNonVisualDrawingPropertiesExtensionList1 = 
+                new ApplicationNonVisualDrawingPropertiesExtensionList();
+            ApplicationNonVisualDrawingPropertiesExtension applicationNonVisualDrawingPropertiesExtension1 = 
+                new ApplicationNonVisualDrawingPropertiesExtension() { Uri = "{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}" };
+
+            P14.Media media1 = new P14.Media() { Embed = mediaEmbedId };
+            media1.AddNamespaceDeclaration("p14", "http://schemas.microsoft.com/office/powerpoint/2010/main");
+            applicationNonVisualDrawingPropertiesExtension1.Append(media1);
+            applicationNonVisualDrawingPropertiesExtensionList1.Append(applicationNonVisualDrawingPropertiesExtension1);
+
+            applicationNonVisualDrawingProperties2.Append(videoFromFile1);
+            applicationNonVisualDrawingProperties2.Append(applicationNonVisualDrawingPropertiesExtensionList1);
+
+            nonVisualPictureProperties1.Append(nonVisualDrawingProperties2);
+            nonVisualPictureProperties1.Append(nonVisualPictureDrawingProperties1);
+            nonVisualPictureProperties1.Append(applicationNonVisualDrawingProperties2);
+
+            BlipFill blipFill1 = new BlipFill();
+            D.Blip blip1 = new D.Blip() { Embed = imgEmbedId };
+
+            D.Stretch stretch1 = new D.Stretch();
+            D.FillRectangle fillRectangle1 = new D.FillRectangle();
+
+            stretch1.Append(fillRectangle1);
+
+            blipFill1.Append(blip1);
+            blipFill1.Append(stretch1);
+
+            ShapeProperties shapeProperties1 = new ShapeProperties();
+
+            D.PresetGeometry presetGeometry1 = new D.PresetGeometry() { Preset = D.ShapeTypeValues.Rectangle };
+            D.AdjustValueList adjustValueList1 = new D.AdjustValueList();
+
+            presetGeometry1.Append(adjustValueList1);
+
+            shapeProperties1.Append(transform);
+            shapeProperties1.Append(presetGeometry1);
+
+            picture1.Append(nonVisualPictureProperties1);
+            picture1.Append(blipFill1);
+            picture1.Append(shapeProperties1);
+
+            shapeTree1.Append(picture1);
+
+            if (!(slide.Timing?.ChildElements?.Count > 0))
+            {
+                AnalysisHelper.InitTiming(slide);
+            }
+
+            ImagePart imagePart = slidepart.AddImagePart(AnalysisHelper.GetImagePartType(videoCoverPath), imgEmbedId);
+            using (var data = File.OpenRead(videoCoverPath))
+            {
+                imagePart.FeedData(data);
+            };
+            
+            Doc.PartExtensionProvider.AddPartExtension("video/mp4", ".mp4");
+            MediaDataPart mediaDataPart1 = Doc.CreateMediaDataPart("video/mp4", ".mp4");
+         
+            using (System.IO.Stream mediaDataPart1Stream = File.OpenRead(videoFilePath))
+            {
+                mediaDataPart1.FeedData(mediaDataPart1Stream);
+            }
+            slidepart.AddVideoReferenceRelationship(mediaDataPart1, videoEmbedId);
+            slidepart.AddMediaReferenceRelationship(mediaDataPart1, mediaEmbedId);
+            slide.Save();
+        }
+
+
 
         private void InitProperty()
         {
